@@ -212,10 +212,10 @@ def calculate_term_rate(start_date, mon_len, MPC_dates_raw, x):
 
 
 
-data1 = pd.read_excel("data1.xlsx")
-data2 = pd.read_excel("data2.xls")
+data1 = pd.read_excel("data1.csv")
+data2 = pd.read_excel("data2.csv")
 data2 = data2.set_index("Date")
-data3 = pd.read_excel("data3.xls")
+data3 = pd.read_excel("data3.csv")
 data3["Date_obj"] = data3["Date"].apply(lambda x: datetime.datetime.strptime(x, "%m/%d/%Y"))
 data3["weekday"] = data3["Date_obj"].apply(lambda x: x.isoweekday())
 
