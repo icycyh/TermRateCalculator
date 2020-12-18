@@ -219,7 +219,7 @@ data3 = pd.read_csv("data3.csv")
 data3["Date_obj"] = data3["Date"].apply(lambda x: datetime.datetime.strptime(x, "%m/%d/%Y"))
 data3["weekday"] = data3["Date_obj"].apply(lambda x: x.isoweekday())
 
-def calc_MPC_dates_raw():
+def calc_MPC_dates_raw(start_date,end_date):
     MPC_dates_raw = []
     for date_str in data1["MPC_dates"]:
         date = datetime.datetime.strptime(date_str, "%m/%d/%Y")
@@ -323,18 +323,19 @@ M = df.values[0,0]
 term = df.values[0,2]
 start_date_str = df.values[0,1]
 
-start_date = datetime.datetime.strptime(start_date_str, "%m/%d/%Y")
-if term == "1M":
-    end_date = start_date + datetime.timedelta(days=30)
-elif term == "3M":
-    end_date = start_date + datetime.timedelta(days=90)
-elif term == "6M":
-    end_date = start_date + datetime.timedelta(days=180)
-end_date_str = datetime.datetime.strftime(end_date, "%m/%d/%Y")
 
-MPC_dates_raw = calc_MPC_dates_raw()
 
 def calc_term(M,start_date_str,term):
+    start_date = datetime.datetime.strptime(start_date_str, "%m/%d/%Y")
+    if term == "1M":
+        end_date = start_date + datetime.timedelta(days=30)
+    elif term == "3M":
+        end_date = start_date + datetime.timedelta(days=90)
+    elif term == "6M":
+        end_date = start_date + datetime.timedelta(days=180)
+    end_date_str = datetime.datetime.strftime(end_date, "%m/%d/%Y")
+    MPC_dates_raw = calc_MPC_dates_raw(start_date,end_date)
+    
     futures = calc_futures(start_date_str)
     FFact = calc_FFact(start_date_str)
     A, b = get_mat_A(start_date_str, int(term[0]), MPC_dates_raw, futures, FFact)
