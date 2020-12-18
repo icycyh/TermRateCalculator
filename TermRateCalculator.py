@@ -310,7 +310,7 @@ df = user_input_features()
 
 st.sidebar.header("Time Series Analysis")
 def time_series_analysis():
-    date2 = st.sidebar.date_input("Evaluation Date",[datetime.datetime.strptime(x,"%m/%d/%Y") for x in ["01/01/2020","12/31/2021"]])
+    date2 = st.sidebar.date_input("Evaluation Date",[datetime.datetime.strptime(x,"%m/%d/%Y") for x in ["01/02/2020","12/31/2021"]])
     return date2
 
 df2 = time_series_analysis()
