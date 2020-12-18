@@ -364,7 +364,7 @@ st.subheader("Time Series")
 date_ld = [datetime.datetime.strptime(d, "%m/%d/%Y").date() for d in date_l]
 date_period = [d for d in date_ld if (d > df2[0] and d < df2[1])]
 
-term_rate_period = [calc_term(M,d.strftime("%m/%d/%Y"),term) for d in date_period]
+term_rate_period = [calc_term(M,d.strftime("%m/%d/%Y"),term)[0] for d in date_period]
 
 chart_data = pd.DataFrame({
  'date': date_period,
