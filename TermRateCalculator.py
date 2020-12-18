@@ -242,6 +242,7 @@ def calc_FFact(start_date_str):
     tmp = start_date_str.split("/")
     mon_year = tmp[0] + "/" + tmp[2] # to locate columns in data2
     mon_start = tmp[0] + "/01/" + tmp[2] # to calculate FFact
+    start_date = datetime.datetime.strptime(start_date_str, "%m/%d/%Y")
 
     df_part = data3[(data3["Date_obj"]>=datetime.datetime.strptime(mon_start, "%m/%d/%Y"))& \
                    (data3["Date_obj"]<start_date)]
