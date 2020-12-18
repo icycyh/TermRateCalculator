@@ -340,11 +340,12 @@ def calc_term(M,start_date_str,term):
     FFact = calc_FFact(start_date_str)
     A, b = get_mat_A(start_date_str, int(term[0]), MPC_dates_raw, futures, FFact)
     x = solve_eq(A, b, M)
-    return calculate_term_rate(start_date_str, int(term[0]), MPC_dates_raw, x)
+    return [calculate_term_rate(start_date_str, int(term[0]), MPC_dates_raw, x),MPC_dates_raw]
 
 
 st.subheader('Calculate term rate')
-st.write(calc_term(M,start_date_str,term))
+[term_rate, MPC_dates_raw] = calc_term(M,start_date_str,term)
+st.write(term_rate)
 
 st.subheader('Report')
 
