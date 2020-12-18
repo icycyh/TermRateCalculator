@@ -1,4 +1,4 @@
-# ARR Term Rate Calculator
+# Term Rate Calculator
 # EY
 # UChicago Project Lab
 # for streamlit
@@ -219,7 +219,6 @@ data3 = pd.read_csv("data3.csv")
 data3["Date_obj"] = data3["Date"].apply(lambda x: datetime.datetime.strptime(x, "%m/%d/%Y"))
 data3["weekday"] = data3["Date_obj"].apply(lambda x: x.isoweekday())
 
-### 
 def calc_MPC_dates_raw():
     MPC_dates_raw = []
     for date_str in data1["MPC_dates"]:
@@ -265,13 +264,11 @@ def calc_FFact(start_date_str):
                 FFact_l.append(row["SOFR_rate"])
         else:
             FFact_l.append(row["SOFR_rate"])
-    ### FFact
     FFact = np.mean(FFact_l)
     return FFact
 
 
 
-# date_l = ["11/04/2020","12/09/2020", "12/10/2020", "12/11/2020", "12/14/2020","12/15/2020"]
 date_l = []
 date_ll = data3['Date']
 for i in range(len(date_ll)):
@@ -286,31 +283,12 @@ for i in range(len(date_ll)):
     if len(df_part) != 0:
         date_l.append(date_ll[i])
 
-# st.write(date_l)
 
-# date_l = ["11/02/2020"]
 terms = ['1M','3M','6M']
-
-def calc_term_rate_list(M):
-	array = []
-	for month_len in [1, 3, 6]:
-	    tmp_l = []
-	    for i in range(len(date_l)):
-	        FFact = np.mean(sofr_raw[:16+i])
-	        futures_raw = np.array(futures_all[i])
-	        futures = []
-	        for quote in futures_raw:
-	            if quote is not None:
-	                futures.append(100-quote)
-	        A, b = get_mat_A(date_l[i], month_len, MPC_dates_raw, futures, FFact)
-	        x = solve_eq(A, b, M)
-	        tmp_l.append(calculate_term_rate(date_l[i], month_len, MPC_dates_raw, x))
-	    array.append(tmp_l)
-	return array
 
 ###############################################################
 st.write("""
-# ARR Term Rate Calculator
+# Term Rate Calculator
 This app present the term rate of SOFR based on the future implied
 term rate estimation approach proposed by ARRC.
 """)
@@ -318,40 +296,28 @@ term rate estimation approach proposed by ARRC.
 st.sidebar.header('User Input Parameters')
 
 def user_input_features():
+    M = st.sidebar.slider('Optimization Weight',0.0,1.0,0.6)
+    date = st.sidebar.selectbox("Evaluation Date", date_l)
+    mon_len = st.sidebar.selectbox('Term',terms)
 
-	M = st.sidebar.slider('Optimization Weight',0.0,1.0,0.6)
-	date = st.sidebar.selectbox("Evaluation Date", date_l)
-	mon_len = st.sidebar.selectbox('Term',terms)
-
-	data = {'Optimization Weight': M,
+    data = {'Optimization Weight': M,
 			'Evaluation Date': date,
 			'Term': mon_len}
-	features = pd.DataFrame(data,index=[0])
-	return features
-
+    features = pd.DataFrame(data,index=[0])
+    return features
 
 df = user_input_features()
+
+st.sidebar.header("Time Series Analysis")
+def time_series_analysis():
+    date2 = st.sidebar.date_input("Evaluation Date",[datetime.datetime.strptime(x,"%m/%d/%Y") for x in ["01/01/2020","12/31/2021"]])
+    return date2
+
+df2 = time_series_analysis()
 
 st.subheader('User Input parameters')
 st.write(df)
 
-# M = df.values[0,0]
-# date = df.values[0,1]
-# term = df.values[0,2]
-# array = calc_term_rate_list(M)
-
-
-
-# st.subheader('Comparison with CME/ICE - '+df.values[0,2]+' term rate')
-# chart_data = pd.DataFrame({
-#  'date': date_l,
-#  'CME': cme_ans[:len(date_l)].T[terms.index(term)],
-#  'ICE': ice_ans[:len(date_l)].T[terms.index(term)],
-#  'ours': array[terms.index(term)]
-#  })
-# chart_data.set_index('date',inplace=True)
-
-# st.line_chart(chart_data)
 
 M = df.values[0,0]
 term = df.values[0,2]
@@ -375,7 +341,6 @@ def calc_term(M,start_date_str,term):
     x = solve_eq(A, b, M)
     return calculate_term_rate(start_date_str, int(term[0]), MPC_dates_raw, x)
 
-# date = ""
 
 st.subheader('Calculate term rate')
 st.write(calc_term(M,start_date_str,term))
@@ -392,3 +357,17 @@ st.write(pd.DataFrame(report_data2))
 
 
 
+st.subheader("Time Series")
+
+date_ld = [datetime.datetime.strptime(d, "%m/%d/%Y").date() for d in date_l]
+date_period = [d for d in date_ld if (d > df2[0] and d < df2[1])]
+
+term_rate_period = [calc_term(M,d.strftime("%m/%d/%Y"),term) for d in date_period]
+
+chart_data = pd.DataFrame({
+ 'date': date_period,
+ 'term rate': term_rate_period
+ })
+chart_data.set_index('date',inplace=True)
+
+st.line_chart(chart_data)
