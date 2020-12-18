@@ -286,6 +286,7 @@ for i in range(len(date_ll)):
                    (data3["Date_obj"]<start_date)]
     if len(df_part) != 0:
         date_l.append(date_ll[i])
+date_l.pop(date_l.index('02/17/2020'))
 
 
 terms = ['1M','3M','6M']
