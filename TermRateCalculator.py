@@ -234,8 +234,8 @@ def calc_futures(start_date_str):
     mon_start = tmp[0] + "/01/" + tmp[2] # to calculate FFact
 
     start_idx = list(data2.columns).index(mon_year)
-    futures_all = list(data2[list(data2.columns[start_idx:start_idx+7])].loc[start_date_str].values)
-    return futures_all
+    futures = list(data2[list(data2.columns[start_idx:start_idx+7])].loc[start_date_str].values)
+    return futures
 
 
 def calc_FFact(start_date_str):
@@ -265,7 +265,10 @@ def calc_FFact(start_date_str):
                 FFact_l.append(row["SOFR_rate"])
         else:
             FFact_l.append(row["SOFR_rate"])
-    FFact = np.mean(FFact_l)
+    if len(FFact_l) == 0: # if 1st of the month is a Monday
+        FFact = df_part.iloc[-1]["SOFR_rate"]
+    else:
+        FFact = np.mean(FFact_l)
     return FFact
 
 
