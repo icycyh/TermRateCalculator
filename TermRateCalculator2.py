@@ -14,6 +14,24 @@ from scipy.optimize import minimize
 import matplotlib.pyplot as plt  
 from IPython.display import Image
 
+class NoMeetingDateError(Exception): 
+    def __init__(self, value=None): 
+        self.value = "No FOMC meeting between start and end dates, cannot calculate!"
+    def __str__(self): 
+        return(repr(self.value)) 
+
+class WrongFuturesNumError(Exception): 
+    def __init__(self, value=None): 
+        self.value = "Need 7 future prices to calculate, not enough or too many!"
+    def __str__(self): 
+        return(repr(self.value))
+
+class NotWeekdayError(Exception): 
+    def __init__(self, value=None): 
+        self.value = "Can only check term rates for weekdays!"
+    def __str__(self): 
+        return(repr(self.value))
+
 def datetime_to_ql(d):
     d = d.split("/")
     return Date(int(d[1]), int(d[0]), int(d[2]))
@@ -225,7 +243,8 @@ def calc_MPC_dates_raw(start_date,end_date):
         date = datetime.datetime.strptime(date_str, "%m/%d/%Y")
         if date <= end_date and date >= start_date:
             MPC_dates_raw.append(date_str)   
-    assert(len(MPC_dates_raw) > 0)
+    if len(MPC_dates_raw) == 0:
+	raise(NoMeetingDateError())
     return MPC_dates_raw
 
 
@@ -235,7 +254,8 @@ def calc_futures(start_date_str):
     mon_start = tmp[0] + "/01/" + tmp[2] # to calculate FFact
 
     futures = data2.loc[start_date_str].values
-    assert(len(futures) == 7)
+    if len(futures) != 7:
+	raise(WrongFuturesNumError())
     return futures
 
 
@@ -329,8 +349,11 @@ M = df.values[0,0]
 term = df.values[0,2]
 start_date_str = df.values[0,1]
 start_dow = datetime.datetime.strptime(start_date_str, "%m/%d/%Y").isoweekday()
-assert(start_dow!=6 and start_dow!=7)
-
+try:
+    if start_dow==6 or start_dow==7:
+        raise(NotWeekdayError())
+except NotWeekdayError as g:
+    print(g)
 
 def calc_term(M,start_date_str,term):
     start_date = datetime.datetime.strptime(start_date_str, "%m/%d/%Y")
@@ -351,7 +374,13 @@ def calc_term(M,start_date_str,term):
 
 
 st.subheader('Calculate term rate')
-[term_rate, MPC_dates_raw,end_date_str] = calc_term(M,start_date_str,term)
+try:
+    [term_rate, MPC_dates_raw,end_date_str] = calc_term(M,start_date_str,term)
+except NoMeetingDateError as e:
+    print(e)
+except WrongFuturesNumError as f:
+    print(f)
+
 st.write(term_rate)
 
 st.subheader('Report')
