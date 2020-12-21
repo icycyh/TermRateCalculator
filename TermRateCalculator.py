@@ -225,6 +225,7 @@ def calc_MPC_dates_raw(start_date,end_date):
         date = datetime.datetime.strptime(date_str, "%m/%d/%Y")
         if date <= end_date and date >= start_date:
             MPC_dates_raw.append(date_str)   
+    assert(len(MPC_dates_raw) > 0)
     return MPC_dates_raw
 
 
@@ -233,8 +234,8 @@ def calc_futures(start_date_str):
     mon_year = tmp[0] + "/" + tmp[2] # to locate columns in data2
     mon_start = tmp[0] + "/01/" + tmp[2] # to calculate FFact
 
-    start_idx = list(data2.columns).index(mon_year)
-    futures = list(data2[list(data2.columns[start_idx:start_idx+7])].loc[start_date_str].values)
+    futures = data2.loc[start_date_str].values
+    assert(len(futures) == 7)
     return futures
 
 
@@ -327,7 +328,8 @@ st.write(df)
 M = df.values[0,0]
 term = df.values[0,2]
 start_date_str = df.values[0,1]
-
+start_dow = datetime.datetime.strptime(start_date_str, "%m/%d/%Y").isoweekday()
+assert(start_dow!=6 and start_dow!=7)
 
 
 def calc_term(M,start_date_str,term):
