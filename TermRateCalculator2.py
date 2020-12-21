@@ -256,7 +256,10 @@ def calc_futures(start_date_str):
     futures = data2.loc[start_date_str].values
     if len(futures) != 7:
         raise(WrongFuturesNumError())
-    return futures
+    new_futures = []
+    for elem in futures:
+        new_futures.append(100-elem)
+    return new_futures
 
 
 def calc_FFact(start_date_str):
