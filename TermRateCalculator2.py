@@ -32,6 +32,12 @@ class NotWeekdayError(Exception):
     def __str__(self): 
         return(repr(self.value))
 
+class EndDateError(Exception): 
+    def __init__(self, value=None): 
+        self.value = "End date is outside of the dataset, cannot calculate!"
+    def __str__(self): 
+        return(repr(self.value))
+
 def datetime_to_ql(d):
     d = d.split("/")
     return Date(int(d[1]), int(d[0]), int(d[2]))
@@ -367,6 +373,8 @@ def calc_term(M,start_date_str,term):
     elif term == "6M":
         end_date = start_date + datetime.timedelta(days=180)
     end_date_str = datetime.datetime.strftime(end_date, "%m/%d/%Y")
+    if end_date_str not in list(data2.index):
+        raise(EndDateError())
     MPC_dates_raw = calc_MPC_dates_raw(start_date,end_date)
     
     futures = calc_futures(start_date_str)
@@ -383,6 +391,8 @@ except NoMeetingDateError as e:
     print(e)
 except WrongFuturesNumError as f:
     print(f)
+except EndDateError as h:
+    print(h)
 
 st.write(term_rate)
 
