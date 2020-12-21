@@ -249,6 +249,7 @@ def calc_MPC_dates_raw(start_date,end_date):
         date = datetime.datetime.strptime(date_str, "%m/%d/%Y")
         if date <= end_date and date >= start_date:
             MPC_dates_raw.append(date_str)   
+    print(MPC_dates_raw)
     if len(MPC_dates_raw) == 0:
         raise(NoMeetingDateError())
     return MPC_dates_raw
