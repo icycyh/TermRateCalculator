@@ -32,12 +32,6 @@ class NotWeekdayError(Exception):
     def __str__(self): 
         return(repr(self.value))
 
-class EndDateError(Exception): 
-    def __init__(self, value=None): 
-        self.value = "End date is outside of the dataset, cannot calculate!"
-    def __str__(self): 
-        return(repr(self.value))
-
 def datetime_to_ql(d):
     d = d.split("/")
     return Date(int(d[1]), int(d[0]), int(d[2]))
@@ -303,7 +297,6 @@ def calc_FFact(start_date_str):
     return FFact
 
 
-
 date_l = []
 date_ll = data3['Date']
 for i in range(len(date_ll)):
@@ -317,8 +310,6 @@ for i in range(len(date_ll)):
                    (data3["Date_obj"]<start_date)]
     if len(df_part) != 0:
         date_l.append(date_ll[i])
-date_l.pop(date_l.index('02/17/2020'))
-
 
 terms = ['1M','3M','6M']
 
@@ -390,8 +381,6 @@ except NoMeetingDateError as e:
     print(e)
 except WrongFuturesNumError as f:
     print(f)
-except EndDateError as h:
-    print(h)
 
 st.write(term_rate)
 
