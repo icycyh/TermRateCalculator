@@ -255,7 +255,7 @@ def calc_futures(start_date_str):
 
     futures = data2.loc[start_date_str].values
     if len(futures) != 7:
-	raise(WrongFuturesNumError())
+        raise(WrongFuturesNumError())
     return futures
 
 
