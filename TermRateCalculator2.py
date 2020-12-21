@@ -373,8 +373,6 @@ def calc_term(M,start_date_str,term):
     elif term == "6M":
         end_date = start_date + datetime.timedelta(days=180)
     end_date_str = datetime.datetime.strftime(end_date, "%m/%d/%Y")
-    if end_date_str not in list(data2.index):
-        raise(EndDateError())
     MPC_dates_raw = calc_MPC_dates_raw(start_date,end_date)
     
     futures = calc_futures(start_date_str)
