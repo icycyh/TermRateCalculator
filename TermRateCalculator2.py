@@ -375,12 +375,13 @@ def calc_term(M,start_date_str,term):
 
 
 st.subheader('Calculate term rate')
-try:
-    [term_rate, MPC_dates_raw,end_date_str] = calc_term(M,start_date_str,term)
-except NoMeetingDateError as e:
-    print(e)
-except WrongFuturesNumError as f:
-    print(f)
+[term_rate, MPC_dates_raw,end_date_str] = calc_term(M,start_date_str,term)
+# try:
+#     [term_rate, MPC_dates_raw,end_date_str] = calc_term(M,start_date_str,term)
+# except NoMeetingDateError as e:
+#     print(e)
+# except WrongFuturesNumError as f:
+#     print(f)
 
 st.write(term_rate)
 
